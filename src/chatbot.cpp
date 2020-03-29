@@ -11,7 +11,6 @@
 // constructor WITHOUT memory allocation
 ChatBot::ChatBot()
 {
-    std::cout << "ChatBot Constructor WITHOUT memory allocation" << std::endl;
     // invalidate data handles
     _image = nullptr;
     _chatLogic = nullptr;
@@ -21,7 +20,7 @@ ChatBot::ChatBot()
 // constructor WITH memory allocation
 ChatBot::ChatBot(std::string filename)
 {
-    std::cout << "ChatBot Constructor WITH memory allocation" << std::endl;
+    std::cout << "ChatBot Constructor" << std::endl;
 
     // invalidate data handles
     _chatLogic = nullptr;
@@ -47,21 +46,70 @@ ChatBot::~ChatBot()
 ////
 //copy constructor
 ChatBot::ChatBot(const ChatBot& other){
-  _image = other._image;
+  std::cout << "ChatBot Copy constructor" << std::endl;
+
+  this->_chatLogic = other._chatLogic;
+  this->_rootNode = other._rootNode;
+  this->_currentNode = other._currentNode;
+  this->_image = new wxBitmap(*other._image);
+  this->_chatLogic->SetChatbotHandle(this);
 }
 //assignment operator
 ChatBot& ChatBot::operator=(const ChatBot& other){
-  return *this = ChatBot(other);
+  std::cout << "ChatBot assignment" << std::endl;
+
+  if (this == &other)
+  {
+      return *this;
+  }
+
+  this->_chatLogic = other._chatLogic;
+  this->_rootNode = other._rootNode;
+  this->_currentNode = other._currentNode;
+  this->_image = new wxBitmap(*other._image);
+  this->_chatLogic->SetChatbotHandle(this);
+  return *this;
 }
 //move constructor
 ChatBot::ChatBot(ChatBot&& other) noexcept{
-  _image = std::exchange(other._image, nullptr);
+  std::cout << "ChatBot Move Constructor" << std::endl;
+
+  this->_chatLogic = other._chatLogic;
+  this->_rootNode = other._rootNode;
+  this->_currentNode = other._currentNode;
+  this->_image = other._image;
+  this->_chatLogic->SetChatbotHandle(this);
+  // clear the origin
+  other._chatLogic = nullptr;
+  other._rootNode = nullptr;
+  other._currentNode = nullptr;
+  other._image = nullptr;
 }
 
 //move assigment operator
 ChatBot& ChatBot::operator=(ChatBot&& other) noexcept{
-    std::swap(_image, other._image);
-    return *this;
+  std::cout << "ChatBot Move Assignment" << std::endl;
+
+  if (this == &other)
+  {
+      return *this;
+  }
+
+  if(this->_image != nullptr) {
+      delete this->_image;
+  }
+
+  this->_chatLogic = other._chatLogic;
+  this->_rootNode = other._rootNode;
+  this->_currentNode = other._currentNode;
+  this->_image = other._image;
+  this->_chatLogic->SetChatbotHandle(this);
+  // clear:
+  other._chatLogic = nullptr;
+  other._rootNode = nullptr;
+  other._currentNode = nullptr;
+  other._image = NULL;
+  return *this;
 }
 
 
